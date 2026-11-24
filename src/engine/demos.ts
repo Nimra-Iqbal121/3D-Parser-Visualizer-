@@ -1,0 +1,145 @@
+import { DemoExample, ParserId } from './types';
+
+export const DEMO_EXAMPLES: DemoExample[] = [
+  // ================= RECURSIVE DESCENT =================
+  {
+    id: 'rd-demo-1',
+    parser: 'rd',
+    title: 'Addition Expression (Prompt Demo)',
+    category: 'Arithmetic',
+    description: 'Classic right-recursive addition grammar demonstrating recursive procedure calls E() → T() + E() and parse tree growth.',
+    grammar: 'E -> T + E | T\nT -> id',
+    input: 'id + id',
+    expectedOutcome: 'accepted',
+  },
+  {
+    id: 'rd-demo-2',
+    parser: 'rd',
+    title: 'Parenthesized Arithmetic Expressions',
+    category: 'Parentheses',
+    description: 'Nested parentheses and addition/multiplication parsed via recursive descent procedures.',
+    grammar: "E -> T E'\nE' -> + T E' | ε\nT -> F T'\nT' -> * F T' | ε\nF -> ( E ) | id",
+    input: '( id + id ) * id',
+    expectedOutcome: 'accepted',
+  },
+  {
+    id: 'rd-demo-3',
+    parser: 'rd',
+    title: 'Left Recursion Failure Case',
+    category: 'Error Case',
+    description: 'Demonstrates why left-recursive rules (E -> E + T) must be rejected before running Recursive Descent.',
+    grammar: 'E -> E + T | T\nT -> id',
+    input: 'id + id',
+    expectedOutcome: 'rejected',
+  },
+
+  // ================= LL(1) =================
+  {
+    id: 'll1-demo-1',
+    parser: 'll1',
+    title: 'Standard Arithmetic LL(1) (Prompt Demo)',
+    category: 'Arithmetic',
+    description: 'The canonical left-recursion-free expression grammar with FIRST, FOLLOW, and full predictive table.',
+    grammar: "E -> T E'\nE' -> + T E' | ε\nT -> F T'\nT' -> * F T' | ε\nF -> ( E ) | id",
+    input: 'id + id * id',
+    expectedOutcome: 'accepted',
+  },
+  {
+    id: 'll1-demo-2',
+    parser: 'll1',
+    title: 'Parenthesized Expression',
+    category: 'Parentheses',
+    description: 'Shows predictive matching of balanced parentheses inside arithmetic expressions.',
+    grammar: "E -> T E'\nE' -> + T E' | ε\nT -> F T'\nT' -> * F T' | ε\nF -> ( E ) | id",
+    input: '( id + id ) * id',
+    expectedOutcome: 'accepted',
+  },
+  {
+    id: 'll1-demo-3',
+    parser: 'll1',
+    title: 'Common Prefix / Left Factoring Conflict',
+    category: 'Conflict Case',
+    description: 'If-else grammar with shared prefix triggering an LL(1) FIRST/FIRST conflict with an auto-fixable left factoring suggestion.',
+    grammar: 'S -> if E then S else S | if E then S | id\nE -> id',
+    input: 'if id then id',
+    expectedOutcome: 'conflict',
+  },
+  {
+    id: 'll1-demo-4',
+    parser: 'll1',
+    title: 'Invalid Expression (Unmatched Parenthesis)',
+    category: 'Error Case',
+    description: 'Detects unmatched parentheses and explains the exact missing closing token.',
+    grammar: "E -> T E'\nE' -> + T E' | ε\nT -> F T'\nT' -> * F T' | ε\nF -> ( E ) | id",
+    input: '( id + id * id',
+    expectedOutcome: 'rejected',
+  },
+
+  // ================= OPERATOR PRECEDENCE (OPP) =================
+  {
+    id: 'opp-demo-1',
+    parser: 'opp',
+    title: 'Expression Precedence & Associativity (Prompt Demo)',
+    category: 'Precedence',
+    description: 'Computes FIRSTVT, LASTVT, and precedence matrix (<, =, >) to parse id + id * id with * taking precedence over +.',
+    grammar: 'E -> E + E\nE -> E * E\nE -> ( E )\nE -> id',
+    input: 'id + id * id',
+    expectedOutcome: 'accepted',
+  },
+  {
+    id: 'opp-demo-2',
+    parser: 'opp',
+    title: 'Nested Parentheses & Power Operator',
+    category: 'Parentheses',
+    description: 'Combines parentheses (= relation), multiplication, addition, and right-associative exponentiation (^).',
+    grammar: 'E -> E + E | E * E | E ^ E | ( E ) | id',
+    input: '( id + id ) * id ^ id',
+    expectedOutcome: 'accepted',
+  },
+  {
+    id: 'opp-demo-3',
+    parser: 'opp',
+    title: 'Invalid Non-Operator Grammar (Adjacent Non-Terminals)',
+    category: 'Error Case',
+    description: 'Demonstrates OPP validation detecting two adjacent non-terminals (E A) which violate operator grammar rules.',
+    grammar: 'E -> E A E | id\nA -> + | *',
+    input: 'id + id',
+    expectedOutcome: 'rejected',
+  },
+
+  // ================= LR(0) =================
+  {
+    id: 'lr0-demo-1',
+    parser: 'lr0',
+    title: 'Clean LR(0) Grammar (Balanced Assignments)',
+    category: 'Simple Grammar',
+    description: 'Conflict-free LR(0) grammar with canonical item sets, clean DFA transitions, and zero lookahead needed.',
+    grammar: 'S -> A A\nA -> a A | b',
+    input: 'a b a b',
+    expectedOutcome: 'accepted',
+  },
+  {
+    id: 'lr0-demo-2',
+    parser: 'lr0',
+    title: 'Parenthesized Pair Grammar',
+    category: 'Parentheses',
+    description: 'Simple conflict-free LR(0) grammar matching nested parentheses around id.',
+    grammar: 'S -> ( L ) | id\nL -> S',
+    input: '( ( id ) )',
+    expectedOutcome: 'accepted',
+  },
+  {
+    id: 'lr0-demo-3',
+    parser: 'lr0',
+    title: 'LR(0) Shift/Reduce Conflict (Arithmetic)',
+    category: 'Conflict Case',
+    description: 'Standard expression grammar causes a Shift/Reduce conflict in LR(0) because LR(0) reduces without checking FOLLOW sets.',
+    grammar: 'E -> E + T | T\nT -> T * F | F\nF -> ( E ) | id',
+    input: 'id + id * id',
+    expectedOutcome: 'conflict',
+  },
+];
+
+export function getDefaultDemoForParser(parser: ParserId): DemoExample {
+  return DEMO_EXAMPLES.find((d) => d.parser === parser) || DEMO_EXAMPLES[0];
+}

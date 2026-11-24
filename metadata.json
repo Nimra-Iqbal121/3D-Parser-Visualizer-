@@ -1,0 +1,6 @@
+{
+  "name": "Parser Visualizer 3D",
+  "description": "Interactive 3D Compiler Construction educational platform covering Top-Down (Recursive Descent, LL(1)) and Bottom-Up (Operator Precedence, LR(0), SLR(1), CLR(1), LALR(1)) parsers with real algorithmic execution, 3D stack/tree/DFA visualizations, and intelligent grammar diagnostics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
